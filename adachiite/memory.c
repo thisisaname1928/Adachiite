@@ -32,8 +32,6 @@ uint64_t getMemoryMap() {
   EFI_STATUS s = bootServices->getMemMap(
       &bufferSize, (EFI_MEMORY_DESCRIPTOR *)p, &sus, &sus, (uint32_t *)&sus);
 
-  bufferSize = 0x2000;
-
   memoryMapKey = 0;
   memoryMapSize = 0x0;
   if (s == 5) {

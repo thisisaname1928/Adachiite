@@ -24,36 +24,37 @@ uint64_t descriptionSize = 0;
 uint64_t memoryMapSize = 0;
 uint32_t descriptionVer = 0;
 uint64_t getMemoryMap() {
-  uint64_t bufferSize = 0x1000; // 4KB
-  EFI_PHYSICAL_ADDRESS p = allocPage(1);
-  EFI_PHYSICAL_ADDRESS last = p;
+  uint64_t bufferSize = 0x0;
+  EFI_PHYSICAL_ADDRESS p = 0x200000; // let this sound legit
+  uint64_t sus;
 
-  EFI_STATUS s =
-      bootServices->getMemMap(&bufferSize, (EFI_MEMORY_DESCRIPTOR *)&p,
-                              &memoryMapKey, &descriptionSize, &descriptionVer);
-  while (s == 5) { // memoryMap bigger than current buffer
-    // alloc more pages
-    freePage(last, bufferSize / 0x1000);
-    bufferSize += 0x1000;
-    p = allocPage(bufferSize / 0x1000);
-    if (p == 0) {
-      print(u"OUT OF MEMORY");
-      for (;;) {
-      }
+  // fetch for size
+  EFI_STATUS s = bootServices->getMemMap(
+      &bufferSize, (EFI_MEMORY_DESCRIPTOR *)p, &sus, &sus, (uint32_t *)&sus);
+
+  bufferSize = 0x2000;
+
+  memoryMapKey = 0;
+  memoryMapSize = 0x0;
+  if (s == 5) {
+    uint64_t numOfPages = 0;
+    while (memoryMapSize < bufferSize) {
+      memoryMapSize += 0x1000;
+      numOfPages++;
     }
-    last = p;
+    memoryMapSize += 0x1000;
 
-    s = bootServices->getMemMap(&bufferSize, (EFI_MEMORY_DESCRIPTOR *)&p,
+    p = allocPage(numOfPages + 1);
+    s = bootServices->getMemMap(&memoryMapSize, (EFI_MEMORY_DESCRIPTOR *)p,
                                 &memoryMapKey, &descriptionSize,
                                 &descriptionVer);
-    printUint(s);
   }
 
-  //   if (s != 0) {
-  //     print(u"Out of memory\n");
-  //     for (;;) {
-  //     }
-  //   }
+  if (s != 0) {
+    print(u"Out of memory\n");
+    for (;;) {
+    }
+  }
 
   memoryMapSize = bufferSize;
 

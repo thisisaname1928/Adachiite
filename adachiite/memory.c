@@ -40,9 +40,8 @@ uint64_t getMemoryMap() {
       memoryMapSize += 0x1000;
       numOfPages++;
     }
-    memoryMapSize += 0x1000;
 
-    p = allocPage(numOfPages + 1);
+    p = allocPage(numOfPages);
     s = bootServices->getMemMap(&memoryMapSize, (EFI_MEMORY_DESCRIPTOR *)p,
                                 &memoryMapKey, &descriptionSize,
                                 &descriptionVer);
@@ -54,8 +53,6 @@ uint64_t getMemoryMap() {
     }
   }
 
-  memoryMapSize = bufferSize;
-
   return p;
 }
 
@@ -63,4 +60,23 @@ EFI_MEMORY_DESCRIPTOR *nextDescriptor(EFI_MEMORY_DESCRIPTOR *current) {
   char *next = (char *)current + descriptionSize;
 
   return (EFI_MEMORY_DESCRIPTOR *)next;
+}
+
+void *allocPool(uint64_t size) {
+  void *ptr;
+  EFI_STATUS s = bootServices->allocPool(EfiLoaderData, size, &ptr);
+  if (s != 0) {
+    print(u"OUT OF MEMORY");
+    for (;;) {
+    }
+  }
+
+  return ptr;
+}
+
+void freePool(void *ptr) {
+  EFI_STATUS s = bootServices->freePool(ptr);
+  if (s != 0) {
+    print(u"BRUH");
+  }
 }

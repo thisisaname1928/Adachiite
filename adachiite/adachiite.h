@@ -23,6 +23,8 @@ uint64_t allocPage(uint64_t pageN);
 void freePage(EFI_PHYSICAL_ADDRESS p, uint64_t pageSize);
 uint64_t getMemoryMap();
 EFI_MEMORY_DESCRIPTOR *nextDescriptor(EFI_MEMORY_DESCRIPTOR *current);
+void *allocPool(uint64_t size);
+void freePool(void *ptr);
 
 extern uint64_t memoryMapKey;
 extern uint64_t descriptionSize;

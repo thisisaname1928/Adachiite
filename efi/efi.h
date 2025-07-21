@@ -104,6 +104,9 @@ typedef EFI_STATUS(EFIAPI *EFI_GET_MEMORY_MAP)(uintn *memoryMapSize,
                                                EFI_MEMORY_DESCRIPTOR *memMap,
                                                uintn *mapKey, uintn *descSize,
                                                uint32_t *version);
+typedef EFI_STATUS(EFIAPI *EFI_ALLOCATE_POOL)(EFI_MEMORY_TYPE poolType,
+                                              uintn size, void **buffer);
+typedef EFI_STATUS(EFIAPI *EFI_FREE_POOL)(void *buffer);
 
 typedef struct {
   EFI_TABLE_HEADER header;
@@ -112,6 +115,8 @@ typedef struct {
   EFI_ALLOCATE_PAGES allocatePage;
   EFI_FREE_PAGES freePage;
   EFI_GET_MEMORY_MAP getMemMap;
+  EFI_ALLOCATE_POOL allocPool;
+  EFI_FREE_POOL freePool;
 } EFI_BOOT_SERVICES;
 
 typedef struct {

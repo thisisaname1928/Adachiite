@@ -23,14 +23,10 @@ EFI_STATUS EFIAPI efi_main(EFI_HANDLE imageHandle,
   enableCursor();
   clearScreen();
 
-  EFI_MEMORY_DESCRIPTOR *memMap = (EFI_MEMORY_DESCRIPTOR *)getMemoryMap();
-
-  // for (int i = 0; i < memoryMapSize / descriptionSize; i++) {
-  //   EFI_MEMORY_DESCRIPTOR *next = nextDescriptor(memMap);
-  //   printHex(memMap->VirtualStart);
-  //   print(u"\r\n");
-  //   memMap = nextDescriptor(memMap);
-  // }
+  uint64_t *s = allocPool(sizeof(uint64_t));
+  *s = 0xffffff;
+  printHex(*s);
+  freePool(s);
 
   print(u"\r\nadachiite> ");
   resetInput();

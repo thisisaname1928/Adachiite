@@ -7,7 +7,7 @@ CC_OBJ=$(patsubst %, %.o, $(CC_SRC))
 OUTPUT=BOOTX64.EFI
 
 test: test.img
-	@qemu-system-x86_64 -L ./x64 -pflash ./x64/OVMF.4m.fd $<
+	@qemu-system-x86_64 -L ./x64 -pflash ./x64/OVMF_CODE.4m.fd $< -enable-kvm -no-reboot
 
 test.img: $(OUTPUT)
 	@dd if=/dev/zero of=$@ bs=1M count=50
@@ -15,6 +15,7 @@ test.img: $(OUTPUT)
 	@mmd -i $@ ::/EFI
 	@mmd -i $@ ::/EFI/BOOT
 	@mcopy -i $@ $< ::/EFI/BOOT
+	@mcopy -i $@ boot ::
 
 $(OUTPUT): $(CC_OBJ)
 	@echo "Linking -> $@"

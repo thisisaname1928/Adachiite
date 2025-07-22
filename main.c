@@ -23,10 +23,37 @@ EFI_STATUS EFIAPI efi_main(EFI_HANDLE imageHandle,
   enableCursor();
   clearScreen();
 
-  uint64_t *s = allocPool(sizeof(uint64_t));
-  *s = 0xffffff;
-  printHex(*s);
-  freePool(s);
+  EFI_GUID sfs = EFI_SIMPLE_FILE_SYSTEM_PROTOCOL_GUID;
+  uint64_t n = 0;
+  EFI_HANDLE *h;
+  EFI_STATUS s = bootServices->locateHandleBuffer(byProtocol, &sfs, 0, &n, &h);
+
+  EFI_SIMPLE_FILE_SYSTEM_PROTOCOL *interface;
+  s = bootServices->openProtocol(h[0], &sfs, (void *)&interface, imageHandle, 0,
+                                 EFI_OPEN_PROTOCOL_BY_HANDLE_PROTOCOL);
+
+  print(u"\n");
+
+  if (s != 0) {
+    print(u"UUUUUU");
+  }
+
+  EFI_FILE_PROTOCOL *f;
+  s = interface->openVolume(interface, &f);
+  uintn bf = 90;
+  EFI_FILE_INFO *buffer = allocPool(90);
+  uint64_t currentPos = 0;
+
+  f->setPos(f, 2);
+  s = f->read(f, &bf, buffer);
+  printUint(bf);
+  if (s != 0)
+    print(u"HAI");
+  // s = f->read(f, &bf, buffer);
+
+  print(buffer->FileName);
+
+  print(u"\n\r");
 
   print(u"\r\nadachiite> ");
   resetInput();

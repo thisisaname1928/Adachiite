@@ -75,11 +75,12 @@ bool loadElf(CHAR16 *path) {
 
     if (programHeaders[i].virtualAddress > largestMemAdd) {
       largestMemAdd = programHeaders[i].virtualAddress;
-      largestMemSize = (largestMemAdd - virtAddr) + programHeaders->memSize;
+      largestMemSize = largestMemAdd + programHeaders[i].memSize - virtAddr;
     }
   }
 
   uint64_t nPages = (largestMemSize / 0x1000) + 2;
+  printHex(largestMemSize);
   print(L"alloc ");
   printUint(nPages);
   print(L" page(s), first page begin at ");

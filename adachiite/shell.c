@@ -1,7 +1,12 @@
 #include "adachiite.h"
 #include <stdbool.h>
+#include <stdint.h>
 
-void executeShell(CHAR16 *cmd);
+bool executeShell(CHAR16 *cmd);
+typedef struct {
+  const CHAR16 *name;
+  bool (*funcPtr)(int n, CHAR16 **args);
+} command;
 
 void shell() {
   CHAR16 buffer[256];
@@ -48,11 +53,122 @@ void shell() {
 }
 
 void testt(int n, CHAR16 **args);
-void echo(int n, CHAR16 **args);
-void cmdListDir(int n, CHAR16 **args);
-void cmdCd(int n, CHAR16 **args);
+bool echo(int n, CHAR16 **args);
+bool cmdListDir(int n, CHAR16 **args);
+bool cmdCd(int n, CHAR16 **args);
+bool cmdCat(int n, CHAR16 **args);
 
-void executeShell(CHAR16 *cmd) {
+const CHAR16 echoN[] = L"echo";
+bool echo(int n, CHAR16 **args) {
+  for (int i = 1; i < n; i++) {
+    print(args[i]);
+    print(L" ");
+  }
+
+  return true;
+}
+
+const CHAR16 lsN[] = L"ls";
+bool cmdListDir(int n, CHAR16 **args) {
+  EFI_FILE *root = currentDir;
+  if (root == NULL) {
+    sysTab->ConOut->OutputString(sysTab->ConOut, L"BRUH\n\r");
+    return false;
+  }
+
+  root->SetPosition(root, 0);
+  while (true) {
+    uint64_t bufferSize = 0;
+    EFI_FILE_INFO *file;
+
+    root->Read(root, &bufferSize, file);
+    if (bufferSize == 0)
+      break;
+
+    sysTab->BootServices->AllocatePool(EfiLoaderData, bufferSize,
+                                       (void **)&file);
+    root->Read(root, &bufferSize, file);
+
+    if ((file->Attribute & EFI_FILE_DIRECTORY) == EFI_FILE_DIRECTORY)
+      print(L"dir  | ");
+    else
+      print(L"file | ");
+    sysTab->ConOut->OutputString(sysTab->ConOut, file->FileName);
+    sysTab->ConOut->OutputString(sysTab->ConOut, L"\n\r");
+
+    sysTab->BootServices->FreePool(file);
+  }
+  return true;
+}
+
+const CHAR16 cdN[] = L"cd";
+bool cmdCd(int n, CHAR16 **args) {
+  if (n < 2) {
+    print(L"....");
+    return false;
+  }
+
+  if (!cd(args[1])) {
+    print(L"No such directory: ");
+    print(args[1]);
+  }
+
+  return true;
+}
+
+const CHAR16 catN[] = L"cat";
+bool cmdCat(int n, CHAR16 **args) {
+  if (n < 2) {
+    return false;
+  }
+
+  char *buf;
+  uint64_t size;
+  bool s = loadFile(args[1], (void **)&buf, &size);
+  if (!s) {
+    print(L"No such file: ");
+    print(args[1]);
+    return false;
+  }
+
+  for (uint64_t i = 0; i < size; i++) {
+    CHAR16 x[2];
+    x[1] = 0;
+    x[0] = buf[i];
+    print(x);
+  }
+
+  freePool(buf);
+  return true;
+}
+
+void testt(int n, CHAR16 **args) {
+  for (int i = 0; i < n; i++) {
+    print(L"\n\rarg: ");
+    print(args[i]);
+  }
+}
+
+CHAR16 helpN[] = L"help";
+bool cmdHelp(int n, CHAR16 **args);
+
+#define NEW_COMMAND(cName, func) {.name = cName, .funcPtr = func}
+command cmds[] = {NEW_COMMAND(echoN, echo), NEW_COMMAND(lsN, cmdListDir),
+                  NEW_COMMAND(cdN, cmdCd), NEW_COMMAND(catN, cmdCat),
+                  NEW_COMMAND(helpN, cmdHelp)};
+#define cmdLength 5
+
+bool cmdHelp(int n, CHAR16 **args) {
+  print(L"available commands: ");
+  for (int i = 0; i < cmdLength; i++) {
+    print((CHAR16 *)cmds[i].name);
+    print(L" ");
+  }
+
+  return true;
+}
+
+bool executeShell(CHAR16 *cmd) {
   CHAR16 **args = allocPool(120 * sizeof(CHAR16 *));
   int n = 0;
   for (int i = 0; cmd[i] != 0;) {
@@ -94,73 +210,17 @@ void executeShell(CHAR16 *cmd) {
 
   if (n > 0) {
     print(L"\n\r");
-    if (c16strcmp(args[0], L"echo")) {
-      echo(n, args);
-    } else if (c16strcmp(args[0], L"clear")) {
-      clearScreen();
-    } else if (c16strcmp(args[0], L"ls")) {
-      cmdListDir(n, args);
-    } else if (c16strcmp(args[0], L"cd")) {
-      cmdCd(n, args);
-    } else
-      print(L"command not found!");
+
+    for (int i = 0; i < cmdLength; i++) {
+      if (c16strcmp(args[0], (CHAR16 *)cmds[i].name)) {
+        bool res = cmds[i].funcPtr(n, args);
+        freePool(args);
+        return res;
+      }
+    }
+
+    print(L"command not found: ");
+    print(args[0]);
   }
-  freePool(args);
-}
-
-void echo(int n, CHAR16 **args) {
-  for (int i = 1; i < n; i++) {
-    print(args[i]);
-    print(L" ");
-  }
-}
-
-void cmdListDir(int n, CHAR16 **args) {
-  EFI_FILE *root = currentDir;
-  if (root == NULL) {
-    sysTab->ConOut->OutputString(sysTab->ConOut, L"BRUH\n\r");
-    return;
-  }
-
-  root->SetPosition(root, 0);
-  while (true) {
-    uint64_t bufferSize = 0;
-    EFI_FILE_INFO *file;
-
-    root->Read(root, &bufferSize, file);
-    if (bufferSize == 0)
-      break;
-
-    sysTab->BootServices->AllocatePool(EfiLoaderData, bufferSize,
-                                       (void **)&file);
-    root->Read(root, &bufferSize, file);
-
-    if ((file->Attribute & EFI_FILE_DIRECTORY) == EFI_FILE_DIRECTORY)
-      print(L"dir  | ");
-    else
-      print(L"file | ");
-    sysTab->ConOut->OutputString(sysTab->ConOut, file->FileName);
-    sysTab->ConOut->OutputString(sysTab->ConOut, L"\n\r");
-
-    sysTab->BootServices->FreePool(file);
-  }
-}
-
-void cmdCd(int n, CHAR16 **args) {
-  if (n < 2) {
-    print(L"....");
-    return;
-  }
-
-  if (!cd(args[1])) {
-    print(L"No such directory: ");
-    print(args[1]);
-  }
-}
-
-void testt(int n, CHAR16 **args) {
-  for (int i = 0; i < n; i++) {
-    print(L"\n\rarg: ");
-    print(args[i]);
-  }
+  return false;
 }

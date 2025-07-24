@@ -6,6 +6,27 @@ void print(CHAR16 *inp) { sysTab->ConOut->OutputString(sysTab->ConOut, inp); }
 
 void clearScreen() { sysTab->ConOut->ClearScreen(sysTab->ConOut); }
 
+CHAR16 hexTransTab[] = {'0', '1', '2', '3', '4', '5', '6', '7',
+                        '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+void printHex(uint64_t n) {
+  print(L"0x");
+  if (n == 0) {
+    print(L"0");
+    return;
+  }
+
+  CHAR16 buffer[20];
+  buffer[19] = 0;
+  int c = 18;
+  while (n != 0) {
+    buffer[c] = hexTransTab[n % 16];
+    c--;
+    n /= 16;
+  }
+
+  print(&buffer[c + 1]);
+}
+
 void putchar(CHAR16 c) {
   CHAR16 tmp[2];
   tmp[1] = 0;

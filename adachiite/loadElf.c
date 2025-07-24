@@ -7,14 +7,13 @@
   if (s != EFI_SUCCESS)                                                        \
     return false;
 
-#define virtAddr 0xffffffff80000000
-
 void *elfEntry;
 void *loadedBin;
 void fillBss(char *ptr, uint64_t fileSize, uint64_t memSize) {
   // use char* to prevent we delete somethings wrong
   ptr += fileSize;
-  for (uint64_t i = 0; i < memSize - fileSize; i++) {
+  uint64_t n = memSize - fileSize;
+  for (uint64_t i = 0; i < n; i++) {
     ptr[i] = 0;
   }
 }
@@ -80,11 +79,11 @@ bool loadElf(CHAR16 *path) {
     }
   }
 
-  uint64_t nPages = (largestMemSize / 0x1000) + 1;
+  uint64_t nPages = (largestMemSize / 0x1000) + 2;
   print(L"alloc ");
   printUint(nPages);
   print(L" page(s), first page begin at ");
-  void *ptr = allocPage(nPages, EfiLoaderCode);
+  void *ptr = allocPage(nPages, EfiLoaderData);
   loadedBin = ptr;
   printHex((uint64_t)ptr);
   print(L"\n\r");
@@ -103,5 +102,6 @@ bool loadElf(CHAR16 *path) {
 
   elfEntry = (void *)header.EntryOffset;
 
+  file->Close(file);
   return true;
 }

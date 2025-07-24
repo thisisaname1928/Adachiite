@@ -3,6 +3,8 @@
 #ifndef ADACHIITE_H
 #define ADACHIITE_H
 
+#define virtAddr 0xffffffff80000000
+
 extern EFI_FILE *root;
 extern EFI_FILE *currentDir;
 extern EFI_SYSTEM_TABLE *sysTab;
@@ -29,6 +31,7 @@ bool loadFile(CHAR16 *path, void **ptr, uint64_t *size);
 bool loadElf(CHAR16 *path);
 bool executeShell(CHAR16 *cmd);
 void convertPath(CHAR16 *path);
+bool mapAddress(uint64_t physicalAddress, uint64_t nPages);
 
 void shell();
 

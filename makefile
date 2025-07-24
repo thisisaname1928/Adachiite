@@ -1,13 +1,16 @@
 CC=clang
+ASM=nasm
 CC_FLAGS=-target x86_64-unknown-windows -ffreestanding -fshort-wchar -mno-red-zone 
 LD=clang
 LD_FLAGS=-target x86_64-unknown-windows -nostdlib -Wl,-entry:efi_main -Wl,-subsystem:efi_application -fuse-ld=lld-link
 CC_SRC=$(shell find . -type f -name "*.c")
+ASM_SRC=$(shell find . -type f -name "*.asm")
 CC_OBJ=$(patsubst %, %.o, $(CC_SRC))
+ASM_OBJ=$(patsubst %, %.o, $(ASM_SRC))
 OUTPUT=BOOTX64.EFI
 
 test: test.img
-	@qemu-system-x86_64 -L ./x64 -pflash ./x64/OVMF_CODE.4m.fd $< -enable-kvm -no-reboot
+	@qemu-system-x86_64 -L ./x64 -pflash ./x64/OVMF.4m.fd $< -enable-kvm -no-reboot -m 1G
 
 test.img: $(OUTPUT)
 	@dd if=/dev/zero of=$@ bs=1M count=50
@@ -17,9 +20,13 @@ test.img: $(OUTPUT)
 	@mcopy -i $@ $< ::/EFI/BOOT
 	@mcopy -i $@ boot ::
 
-$(OUTPUT): $(CC_OBJ)
+$(OUTPUT): $(CC_OBJ) $(ASM_OBJ)
 	@echo "Linking -> $@"
-	@$(LD) $(CC_OBJ) -o $@ $(LD_FLAGS)
+	@$(LD) $(CC_OBJ) $(ASM_OBJ) -o $@ $(LD_FLAGS)
+
+%.asm.o:  %.asm
+	@echo "ASM $<"
+	@$(ASM) -f win64 $< -o $@
 
 %.c.o: %.c
 	@echo "CC $<"

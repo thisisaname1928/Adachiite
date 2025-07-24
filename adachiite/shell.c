@@ -153,13 +153,23 @@ CHAR16 helpN[] = L"help";
 bool cmdHelp(int n, CHAR16 **args);
 CHAR16 loadElfN[] = L"loadelf";
 bool cmdLoadELF(int n, CHAR16 **args);
+CHAR16 mapAddrN[] = L"mapaddr";
+bool cmdMapAddr(int n, CHAR16 **args);
+CHAR16 clrN[] = L"clear";
+bool cmdClearScreen(int n, CHAR16 **args);
 
 #define NEW_COMMAND(cName, func) {.name = cName, .funcPtr = func}
 command cmds[] = {
-    NEW_COMMAND(echoN, echo),    NEW_COMMAND(lsN, cmdListDir),
-    NEW_COMMAND(cdN, cmdCd),     NEW_COMMAND(catN, cmdCat),
-    NEW_COMMAND(helpN, cmdHelp), NEW_COMMAND(loadElfN, cmdLoadELF)};
-#define cmdLength 6
+    NEW_COMMAND(echoN, echo),          NEW_COMMAND(lsN, cmdListDir),
+    NEW_COMMAND(cdN, cmdCd),           NEW_COMMAND(catN, cmdCat),
+    NEW_COMMAND(helpN, cmdHelp),       NEW_COMMAND(loadElfN, cmdLoadELF),
+    NEW_COMMAND(mapAddrN, cmdMapAddr), NEW_COMMAND(clrN, cmdClearScreen)};
+#define cmdLength 8
+
+bool cmdClearScreen(int n, CHAR16 **args) {
+  clearScreen();
+  return true;
+}
 
 bool cmdHelp(int n, CHAR16 **args) {
   print(L"available commands: ");
@@ -184,6 +194,11 @@ bool cmdLoadELF(int n, CHAR16 **args) {
   }
 
   return s;
+}
+
+bool cmdMapAddr(int n, CHAR16 **args) {
+  mapAddress((uint64_t)loadedBin, 2);
+  return true;
 }
 
 bool executeShell(CHAR16 *cmd) {

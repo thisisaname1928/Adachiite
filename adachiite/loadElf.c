@@ -9,6 +9,8 @@
 
 #define virtAddr 0xffffffff80000000
 
+void *elfEntry;
+void *loadedBin;
 void fillBss(char *ptr, uint64_t fileSize, uint64_t memSize) {
   // use char* to prevent we delete somethings wrong
   ptr += fileSize;
@@ -83,6 +85,7 @@ bool loadElf(CHAR16 *path) {
   printUint(nPages);
   print(L" page(s), first page begin at ");
   void *ptr = allocPage(nPages, EfiLoaderCode);
+  loadedBin = ptr;
   printHex((uint64_t)ptr);
   print(L"\n\r");
 
@@ -97,6 +100,8 @@ bool loadElf(CHAR16 *path) {
     CHECK_EFI_STATUS(file->Read(file, &bufferSize, curPtr));
     fillBss(curPtr, programHeaders[i].fileSize, programHeaders[i].memSize);
   }
+
+  elfEntry = (void *)header.EntryOffset;
 
   return true;
 }

@@ -28,6 +28,8 @@ EFI_STATUS efi_main(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable) {
 
   clearScreen();
 
+  executeShell(L"loadelf boot/grand");
+
   shell();
 
   print(L"quit shell!");

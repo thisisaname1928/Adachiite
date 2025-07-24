@@ -63,9 +63,9 @@ void convertPath(CHAR16 *path) {
   }
 }
 
-EFI_FILE *currentFile;
 // caller should free pool ptr after using it
 bool loadFile(CHAR16 *path, void **ptr, uint64_t *size) {
+  EFI_FILE *currentFile;
   convertPath(path);
   EFI_STATUS s =
       currentDir->Open(currentDir, &currentFile, path, EFI_FILE_MODE_READ, 0);

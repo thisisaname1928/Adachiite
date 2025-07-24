@@ -9,6 +9,7 @@ extern EFI_SYSTEM_TABLE *sysTab;
 
 void print(CHAR16 *inp);
 void printHex(uint64_t n);
+void printUint(uint64_t n);
 void clearScreen();
 void putchar(CHAR16 c);
 void backspace();
@@ -18,10 +19,14 @@ void *memset(void *ptr, int value, size_t num);
 int memcmp(const void *ptr1, const void *ptr2, size_t num);
 void *allocPool(uint64_t size);
 void freePool(void *ptr);
+void *allocPage(uint64_t n, EFI_MEMORY_TYPE type);
 int c16strcmp(CHAR16 *ptr1, CHAR16 *ptr2);
 void listDir(EFI_FILE *root);
 bool cd(CHAR16 *dirName);
 bool loadFile(CHAR16 *path, void **ptr, uint64_t *size);
+bool loadElf(CHAR16 *path);
+bool executeShell(CHAR16 *cmd);
+void convertPath(CHAR16 *path);
 
 void shell();
 

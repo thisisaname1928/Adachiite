@@ -151,12 +151,15 @@ void testt(int n, CHAR16 **args) {
 
 CHAR16 helpN[] = L"help";
 bool cmdHelp(int n, CHAR16 **args);
+CHAR16 loadElfN[] = L"loadelf";
+bool cmdLoadELF(int n, CHAR16 **args);
 
 #define NEW_COMMAND(cName, func) {.name = cName, .funcPtr = func}
-command cmds[] = {NEW_COMMAND(echoN, echo), NEW_COMMAND(lsN, cmdListDir),
-                  NEW_COMMAND(cdN, cmdCd), NEW_COMMAND(catN, cmdCat),
-                  NEW_COMMAND(helpN, cmdHelp)};
-#define cmdLength 5
+command cmds[] = {
+    NEW_COMMAND(echoN, echo),    NEW_COMMAND(lsN, cmdListDir),
+    NEW_COMMAND(cdN, cmdCd),     NEW_COMMAND(catN, cmdCat),
+    NEW_COMMAND(helpN, cmdHelp), NEW_COMMAND(loadElfN, cmdLoadELF)};
+#define cmdLength 6
 
 bool cmdHelp(int n, CHAR16 **args) {
   print(L"available commands: ");
@@ -166,6 +169,21 @@ bool cmdHelp(int n, CHAR16 **args) {
   }
 
   return true;
+}
+
+bool cmdLoadELF(int n, CHAR16 **args) {
+  if (n < 2) {
+    return false;
+  }
+
+  bool s = loadElf(args[1]);
+  if (!s) {
+    print(L"load ELF ");
+    print(args[1]);
+    print(L" failed!");
+  }
+
+  return s;
 }
 
 bool executeShell(CHAR16 *cmd) {

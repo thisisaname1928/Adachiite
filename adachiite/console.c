@@ -27,6 +27,24 @@ void printHex(uint64_t n) {
   print(&buffer[c + 1]);
 }
 
+void printUint(uint64_t n) {
+  if (n == 0) {
+    print(L"0");
+    return;
+  }
+
+  CHAR16 buffer[20];
+  buffer[19] = 0;
+  int c = 18;
+  while (n != 0) {
+    buffer[c] = n % 10 + 48;
+    c--;
+    n /= 10;
+  }
+
+  print(&buffer[c + 1]);
+}
+
 void putchar(CHAR16 c) {
   CHAR16 tmp[2];
   tmp[1] = 0;

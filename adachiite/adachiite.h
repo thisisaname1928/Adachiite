@@ -10,6 +10,7 @@ extern EFI_FILE *currentDir;
 extern EFI_SYSTEM_TABLE *sysTab;
 extern void *elfEntry;
 extern void *loadedBin;
+extern EFI_GRAPHICS_OUTPUT_PROTOCOL *gop;
 
 void print(CHAR16 *inp);
 void printHex(uint64_t n);

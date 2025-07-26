@@ -6,8 +6,6 @@ void printGOPMode(EFI_GRAPHICS_OUTPUT_MODE_INFORMATION *info) {
   printUint(info->HorizontalResolution);
   print(L"x");
   printUint(info->VerticalResolution);
-  print(L"  pxformat:");
-  printUint(info->PixelFormat);
   print(L" | ");
 }
 
@@ -43,6 +41,11 @@ bool initGOP() {
   }
 
   print(L"ok!\n\r");
+  print(L"current mode: ");
+  printUint(gop->Mode->Info->HorizontalResolution);
+  putchar('x');
+  printUint(gop->Mode->Info->VerticalResolution);
+  print(L"\n\r");
   queryGOPModes();
   return true;
 }

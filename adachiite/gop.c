@@ -1,0 +1,50 @@
+#include "adachiite.h"
+#include <stdint.h>
+EFI_GRAPHICS_OUTPUT_PROTOCOL *gop;
+
+void printGOPMode(EFI_GRAPHICS_OUTPUT_MODE_INFORMATION *info) {
+  printUint(info->HorizontalResolution);
+  print(L"x");
+  printUint(info->VerticalResolution);
+  print(L"  pxformat:");
+  printUint(info->PixelFormat);
+  print(L" | ");
+}
+
+void queryGOPModes() {
+  if (gop == NULL) {
+    print(L"should init gop before call query modes!\n\r");
+    return;
+  }
+
+  uint64_t bufferSize = 1;
+  EFI_GRAPHICS_OUTPUT_MODE_INFORMATION *info;
+  uint64_t i = 0;
+  for (uint32_t i = 0; i < gop->Mode->MaxMode; i++) {
+    EFI_STATUS s = gop->QueryMode(gop, i, &bufferSize, &info);
+    if (s != EFI_SUCCESS)
+      continue;
+
+    printUint(i);
+    print(L": ");
+    printGOPMode(info);
+  }
+}
+
+bool initGOP() {
+  EFI_GUID gopGUID = EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID;
+
+  EFI_STATUS s =
+      sysTab->BootServices->LocateProtocol(&gopGUID, NULL, (void **)&gop);
+
+  if (s != EFI_SUCCESS) {
+    print(L"init GOP failed!\n\r");
+    return false;
+  }
+
+  print(L"ok!\n\r");
+  queryGOPModes();
+  return true;
+}
+
+bool cmdInitGop(int n, CHAR16 **args) { return initGOP(); }

@@ -59,11 +59,10 @@ bool mapAddress(uint64_t physicalAddress, uint64_t nPages) {
   PML4Address = (uint64_t)PML4;
   invlpgM();
 
-  CHAR16 *c = (CHAR16 *)(0xffffffffa0000000);
+  CHAR16 *c = (CHAR16 *)(0xffffffff80000000);
   printHex(*c);
-  void (*func)() = elfEntry;
 
-  func();
+  print(L"\n\rok!");
 
   return true;
 }

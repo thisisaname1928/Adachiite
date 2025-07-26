@@ -33,6 +33,8 @@ bool loadElf(CHAR16 *path);
 bool executeShell(CHAR16 *cmd);
 void convertPath(CHAR16 *path);
 bool mapAddress(uint64_t physicalAddress, uint64_t nPages);
+bool initGOP();
+void putPixel(uint32_t color, int x, int y);
 
 void shell();
 

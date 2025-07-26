@@ -37,16 +37,6 @@ void queryGOPModes() {
 }
 
 bool initGOP() {
-  EFI_GUID gopGUID = EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID;
-
-  EFI_STATUS s =
-      sysTab->BootServices->LocateProtocol(&gopGUID, NULL, (void **)&gop);
-
-  if (s != EFI_SUCCESS) {
-    print(L"init GOP failed!\n\r");
-    return false;
-  }
-
   print(L"ok!\n\r");
   print(L"current mode: ");
   printUint(gop->Mode->Info->HorizontalResolution);

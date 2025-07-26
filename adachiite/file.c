@@ -69,8 +69,10 @@ bool loadFile(CHAR16 *path, void **ptr, uint64_t *size) {
   convertPath(path);
   EFI_STATUS s =
       currentDir->Open(currentDir, &currentFile, path, EFI_FILE_MODE_READ, 0);
-  if (s != EFI_SUCCESS)
+  if (s != EFI_SUCCESS) {
+    print(L"loadFile: EFI return not success\n\r");
     return false;
+  }
 
   EFI_FILE_INFO *info;
   EFI_GUID fileInfoGUID = EFI_FILE_INFO_ID;

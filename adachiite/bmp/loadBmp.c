@@ -57,8 +57,12 @@ void drawIcon(CHAR16 *path, int offsetx, int offsety) {
 
     for (uint32_t y = image.height; y > 0; y--) {
       for (uint32_t x = 0; x < image.width; x++) {
-        putPixel(*color, x + offsetx,
-                 y + offsety); // trunc out
+        if (gop->Mode->Info->PixelFormat ==
+            PixelBlueGreenRedReserved8BitPerColor)
+          putPixel(*color, x + offsetx,
+                   y + offsety); // trunc out
+        else
+          putPixel(flipColor(*color), x + offsetx, y + offsety);
         // 32 bit = 4 bytes
         color++;
       }

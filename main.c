@@ -46,8 +46,8 @@ EFI_STATUS efi_main(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable) {
 
   drawIcon(L"boot/icon.bmp",
            gop->Mode->Info->VerticalResolution -
-               gop->Mode->Info->HorizontalResolution / 40,
-           gop->Mode->Info->HorizontalResolution / 20);
+               gop->Mode->Info->HorizontalResolution / 20,
+           gop->Mode->Info->HorizontalResolution / 15);
 
   shell();
 

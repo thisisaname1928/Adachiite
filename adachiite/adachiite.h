@@ -14,6 +14,7 @@ extern uint64_t kernelPages;
 extern EFI_GRAPHICS_OUTPUT_PROTOCOL *gop;
 extern EFI_HANDLE imgHandle;
 extern uint64_t adachiiteBootInfoPtr;
+extern uint64_t adachiitekernelEntry;
 
 void print(CHAR16 *inp);
 void printHex(uint64_t n);

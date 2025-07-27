@@ -120,10 +120,10 @@ bool adachiite(CHAR16 *kernelPath, CHAR16 *initPath) {
     return false;
   }
 
-  void(__attribute__((sysv_abi)) * kernel)(AdachiiteBootInfo * inf) =
-      (void *)(AdachiiteBootInfo *)elfEntry;
+  adachiiteBootInfoPtr = (uint64_t)info;
+  adachiitekernelEntry = (uint64_t)elfEntry;
 
-  kernel(info);
+  callKernel();
 
   for (;;) {
   }

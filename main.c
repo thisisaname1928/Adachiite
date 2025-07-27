@@ -52,6 +52,7 @@ EFI_STATUS efi_main(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable) {
                gop->Mode->Info->VerticalResolution / 100 - 1,
            gop->Mode->Info->HorizontalResolution / 20 - 1);
 
+  adachiite(L"boot/grand", L"boot/init");
   shell();
 
   print(L"quit shell!");

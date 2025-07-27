@@ -40,6 +40,7 @@ bool initGOP();
 void putPixel(uint32_t color, int x, int y);
 bool adachiite(CHAR16 *kernelPath, CHAR16 *initPath);
 extern void callKernel();
+int findBootEntries(CHAR16 *output);
 
 void shell();
 

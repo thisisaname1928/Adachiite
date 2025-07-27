@@ -40,7 +40,7 @@ bool loadBmp(CHAR16 *path, BmpImage *img) {
 
 uint32_t flipColor(uint32_t color) {
   uint32_t r = (color >> 16) & 0xff, g = (color >> 8) & 0xff, b = color & 0xff;
-  return (b << 16) | (g << 8) | r;
+  return (b << 24) | (g << 16) | (r << 8);
 }
 
 void drawIcon(CHAR16 *path, int offsetx, int offsety) {

@@ -24,7 +24,7 @@ uint64_t *mapPT(uint64_t baseAddress) {
   return PT;
 }
 
-bool mapAddress(uint64_t physicalAddress, uint64_t nPages) {
+bool mapAddress() {
   uint64_t *PML4Addr = (uint64_t *)getCr3();
 
   if ((PML4Addr[511] & 1) == 1)

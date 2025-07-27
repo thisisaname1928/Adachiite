@@ -3,6 +3,8 @@
 #ifndef BMP_H
 #define BMP_H
 
+// idk why my clang doesn't packed this struct, so my reading implementation is
+// a bit weird
 typedef struct __attribute__((packed)) {
   char magic[2];
   uint32_t fileSize;

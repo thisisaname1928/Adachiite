@@ -2,6 +2,7 @@
 #include "adachiite/bmp/bmp.h"
 #include "inc/efi.h"
 #include "inc/efiapi.h"
+#include "inc/efidef.h"
 #include "inc/efierr.h"
 #include "inc/efiprot.h"
 #include <stdbool.h>
@@ -10,9 +11,11 @@
 EFI_FILE *root;
 EFI_FILE *currentDir;
 EFI_SYSTEM_TABLE *sysTab;
+EFI_HANDLE imgHandle;
 
 EFI_STATUS efi_main(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable) {
   sysTab = systemTable;
+  imgHandle = imageHandle;
   sysTab->ConOut->OutputString(sysTab->ConOut, L"HIII\n\r");
 
   // open root
@@ -46,8 +49,8 @@ EFI_STATUS efi_main(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable) {
 
   drawIcon(L"boot/icon.bmp",
            gop->Mode->Info->VerticalResolution -
-               gop->Mode->Info->HorizontalResolution / 20,
-           gop->Mode->Info->HorizontalResolution / 15);
+               gop->Mode->Info->VerticalResolution / 100 - 1,
+           gop->Mode->Info->HorizontalResolution / 20 - 1);
 
   shell();
 

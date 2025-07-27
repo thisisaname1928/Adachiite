@@ -10,7 +10,10 @@ extern EFI_FILE *currentDir;
 extern EFI_SYSTEM_TABLE *sysTab;
 extern void *elfEntry;
 extern void *loadedBin;
+extern uint64_t kernelPages;
 extern EFI_GRAPHICS_OUTPUT_PROTOCOL *gop;
+extern EFI_HANDLE imgHandle;
+extern uint64_t adachiiteBootInfoPtr;
 
 void print(CHAR16 *inp);
 void printHex(uint64_t n);
@@ -32,9 +35,11 @@ bool loadFile(CHAR16 *path, void **ptr, uint64_t *size);
 bool loadElf(CHAR16 *path);
 bool executeShell(CHAR16 *cmd);
 void convertPath(CHAR16 *path);
-bool mapAddress(uint64_t physicalAddress, uint64_t nPages);
+bool mapAddress();
 bool initGOP();
 void putPixel(uint32_t color, int x, int y);
+bool adachiite(CHAR16 *kernelPath, CHAR16 *initPath);
+extern void callKernel();
 
 void shell();
 

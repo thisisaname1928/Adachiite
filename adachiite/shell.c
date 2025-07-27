@@ -149,6 +149,15 @@ void testt(int n, CHAR16 **args) {
   }
 }
 
+const CHAR16 cmdAdachiiteN[] = L"adachiite";
+bool cmdAdachiite(int n, CHAR16 **args) {
+  if (n < 3) {
+    return false;
+  }
+
+  return adachiite(args[1], args[2]);
+}
+
 const CHAR16 helpN[] = L"help";
 bool cmdHelp(int n, CHAR16 **args);
 const CHAR16 loadElfN[] = L"loadelf";
@@ -169,8 +178,9 @@ command cmds[] = {NEW_COMMAND(echoN, echo),
                   NEW_COMMAND(loadElfN, cmdLoadELF),
                   NEW_COMMAND(mapAddrN, cmdMapAddr),
                   NEW_COMMAND(clrN, cmdClearScreen),
-                  NEW_COMMAND(cmdInitGopN, cmdInitGop)};
-#define cmdLength 9
+                  NEW_COMMAND(cmdInitGopN, cmdInitGop),
+                  NEW_COMMAND(cmdAdachiiteN, cmdAdachiite)};
+#define cmdLength 10
 
 bool cmdClearScreen(int n, CHAR16 **args) {
   clearScreen();
@@ -203,7 +213,7 @@ bool cmdLoadELF(int n, CHAR16 **args) {
 }
 
 bool cmdMapAddr(int n, CHAR16 **args) {
-  mapAddress((uint64_t)loadedBin, 2);
+  mapAddress();
   return true;
 }
 

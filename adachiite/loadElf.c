@@ -9,6 +9,7 @@
 
 void *elfEntry;
 void *loadedBin;
+uint64_t kernelPages = 0;
 void fillBss(char *ptr, uint64_t fileSize, uint64_t memSize) {
   // use char* to prevent we delete somethings wrong
   ptr += fileSize;
@@ -80,7 +81,7 @@ bool loadElf(CHAR16 *path) {
   }
 
   uint64_t nPages = (largestMemSize / 0x1000) + 2;
-  printHex(largestMemSize);
+  kernelPages = nPages;
   print(L"alloc ");
   printUint(nPages);
   print(L" page(s), first page begin at ");

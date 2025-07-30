@@ -3,9 +3,8 @@ global callKernel
 
 section .text
 callKernel:
-    mov rdi, qword [adachiiteBootInfoPtr]
-    mov rbx, qword [adachiitekernelEntry]
-    call rbx
+    mov rdi, rdx
+    call rcx
     mov rax, 0xdeadbeef
     jmp $ ; if kernel return
 

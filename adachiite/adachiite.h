@@ -40,7 +40,7 @@ bool mapAddress();
 bool initGOP();
 void putPixel(uint32_t color, int x, int y);
 bool adachiite(CHAR16 *kernelPath, CHAR16 *initPath);
-extern void callKernel();
+extern void callKernel(uint64_t kernelAddress, uint64_t bootInfo);
 int findBootEntries(CHAR16 *output);
 
 void shell();

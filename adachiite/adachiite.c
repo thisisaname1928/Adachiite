@@ -120,10 +120,7 @@ bool adachiite(CHAR16 *kernelPath, CHAR16 *initPath) {
     return false;
   }
 
-  adachiiteBootInfoPtr = (uint64_t)info;
-  adachiitekernelEntry = (uint64_t)elfEntry;
-
-  callKernel();
+  callKernel((uint64_t)elfEntry, (uint64_t)info);
 
   for (;;) {
   }

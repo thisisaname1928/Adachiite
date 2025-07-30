@@ -11,8 +11,7 @@ uint64_t createPageEntry(uint64_t address, uint64_t attributes) {
 }
 
 extern __attribute__((sysv_abi)) uint64_t getCr3();
-extern __attribute__((sysv_abi)) void invlpgM();
-extern uint64_t PML4Address;
+extern void invlpgM(uint64_t);
 
 uint64_t *mapPT(uint64_t baseAddress) {
   uint64_t *PT = allocPage(1, EfiBootServicesData);
@@ -34,13 +33,6 @@ bool mapAddress() {
   for (int i = 0; i < 512; i++)
     PML4[i] = PML4Addr[i];
 
-  // map 512 4KB entries
-  uint64_t baseAddr = (uint64_t)loadedBin;
-  uint64_t *PT = allocPage(1, EfiLoaderData);
-  for (int i = 0; i < 512; i++) {
-    PT[i] = createPageEntry(baseAddr, PRESENT | RW);
-    baseAddr += 0x1000;
-  }
   // map PD
   uint64_t *PD = allocPage(1, EfiLoaderData);
   uint64_t offset = (uint64_t)loadedBin;
@@ -48,6 +40,7 @@ bool mapAddress() {
     PD[i] = createPageEntry((uint64_t)mapPT((uint64_t)offset), PRESENT | RW);
     offset += 0x200000;
   }
+  printHex(PD[0]);
   // map PDP
   uint64_t *PDP = allocPage(1, EfiLoaderData);
   for (int i = 0; i < 512; i++) {
@@ -56,8 +49,8 @@ bool mapAddress() {
   PDP[510] = createPageEntry((uint64_t)PD, PRESENT | RW);
   PML4[511] = createPageEntry((uint64_t)PDP, PRESENT | RW);
 
-  PML4Address = (uint64_t)PML4;
-  invlpgM();
+  invlpgM((uint64_t)PML4);
+  print(L"the hell\n\r");
 
   CHAR16 *c = (CHAR16 *)(0xffffffff80000000);
   printHex(*c);

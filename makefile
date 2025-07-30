@@ -10,7 +10,7 @@ ASM_OBJ=$(patsubst %, %.o, $(ASM_SRC))
 OUTPUT=BOOTX64.EFI
 
 test: test.img
-	@qemu-system-x86_64 -L ./x64 -pflash ./x64/OVMF.4m.fd $< -enable-kvm -no-reboot -m 256M
+	@qemu-system-x86_64 -L ./x64 -pflash ./x64/OVMF_CODE.4m.fd $< -enable-kvm -no-reboot -m 4G
 
 test.img: $(OUTPUT)
 	@dd if=/dev/zero of=$@ bs=1M count=50
